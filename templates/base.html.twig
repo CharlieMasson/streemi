@@ -8,10 +8,11 @@
         {% endblock %}
 
         {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
     <body>
+        {% include "menu/sidebar-left.html.twig" %}
         {% block body %}{% endblock %}
+        {% include "menu/sidebar-right.html.twig" %}
     </body>
 </html>
