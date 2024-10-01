@@ -4,6 +4,12 @@
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="style/style.css" rel="stylesheet">
+        <title>Mes films</title>
+        <script src="https://cdn.tailwindcss.com"></script>
         {% block stylesheets %}
         {% endblock %}
 
@@ -11,8 +17,14 @@
         {% endblock %}
     </head>
     <body>
-        {% include "menu/sidebar-left.html.twig" %}
-        {% block body %}{% endblock %}
-        {% include "menu/sidebar-right.html.twig" %}
+        <div class="flex min-h-screen  2xl:max-w-screen-2xl 2xl:mx-auto 2xl:border-x-2 2xl:border-gray-200">
+
+        {% include 'parts/menu-left.html.twig' %}
+
+        {% block body %}
+
+        {% endblock %}
+
+        {% include 'parts/sidebar-right.html.twig' %}
     </body>
 </html>
