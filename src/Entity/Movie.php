@@ -16,6 +16,10 @@ class Movie
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
+    #[ORM\OneToOne(inversedBy: 'movie', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?media $media = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -29,6 +33,18 @@ class Movie
     public function setName(string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getMedia(): ?media
+    {
+        return $this->media;
+    }
+
+    public function setMedia(media $media): static
+    {
+        $this->media = $media;
 
         return $this;
     }
