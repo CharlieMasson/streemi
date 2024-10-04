@@ -8,8 +8,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\InheritanceType;
 
 #[ORM\Entity(repositoryClass: MediaRepository::class)]
+#[InheritanceType('JOINED')]
+#[DiscriminatorColumn(name: 'discr', type: 'string')]
+#[DiscriminatorMap(['movie' => Movie::class, 'serie' => Serie::class])]
 class Media
 {
     #[ORM\Id]
@@ -46,12 +52,6 @@ class Media
      */
     #[ORM\ManyToMany(targetEntity: language::class, inversedBy: 'media')]
     private Collection $languages;
-
-    #[ORM\OneToOne(mappedBy: 'media', cascade: ['persist', 'remove'])]
-    private ?Movie $movie = null;
-
-    #[ORM\OneToOne(mappedBy: 'media', cascade: ['persist', 'remove'])]
-    private ?Serie $serie = null;
 
     #[ORM\Column(enumType: MediaTypeEnum::class)]
     private ?MediaTypeEnum $mediaType = null;
@@ -222,40 +222,6 @@ class Media
     public function removeLanguage(language $language): static
     {
         $this->languages->removeElement($language);
-
-        return $this;
-    }
-
-    public function getMovie(): ?Movie
-    {
-        return $this->movie;
-    }
-
-    public function setMovie(Movie $movie): static
-    {
-        // set the owning side of the relation if necessary
-        if ($movie->getMedia() !== $this) {
-            $movie->setMedia($this);
-        }
-
-        $this->movie = $movie;
-
-        return $this;
-    }
-
-    public function getSerie(): ?Serie
-    {
-        return $this->serie;
-    }
-
-    public function setSerie(Serie $serie): static
-    {
-        // set the owning side of the relation if necessary
-        if ($serie->getMedia() !== $this) {
-            $serie->setMedia($this);
-        }
-
-        $this->serie = $serie;
 
         return $this;
     }

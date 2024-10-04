@@ -2,25 +2,17 @@
 
 namespace App\Entity;
 
+use App\Entity\Media;
 use App\Repository\SerieRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SerieRepository::class)]
-class Serie
+class Serie extends Media
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\Column(length: 255)]
     private ?string $name = null;
-
-    #[ORM\OneToOne(inversedBy: 'serie', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?media $media = null;
 
     /**
      * @var Collection<int, Season>
@@ -30,12 +22,8 @@ class Serie
 
     public function __construct()
     {
+        parent::__construct();
         $this->seasons = new ArrayCollection();
-    }
-
-    public function getId(): ?int
-    {
-        return $this->id;
     }
 
     public function getName(): ?string
@@ -46,18 +34,6 @@ class Serie
     public function setName(string $name): static
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    public function getMedia(): ?media
-    {
-        return $this->media;
-    }
-
-    public function setMedia(media $media): static
-    {
-        $this->media = $media;
 
         return $this;
     }
