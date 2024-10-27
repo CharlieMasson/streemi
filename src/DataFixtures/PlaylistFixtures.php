@@ -5,7 +5,7 @@ namespace App\DataFixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-class SubscriptionHistory extends Fixture
+class PlaylistFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
