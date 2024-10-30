@@ -18,10 +18,15 @@ class CategoryController extends AbstractController
         return $this->render('movie/discover.html.twig');
     }
 
-    #[Route('/category/{id}')]
-    public function show(Category $category): Response
+    #[Route('/category/{categoryName}', name: 'category')]
+    public function show(CategoryRepository $categoryRepository, string $categoryName): Response
     {
-        if ($category) dump($category);
-        return $this->render('movie/category.html.twig');
+        //recup catégorie par son nom
+        $category = $categoryRepository->findOneBy(['name' => $categoryName]);
+
+        return $this->render('movie/category.html.twig', [
+            'category' => $category,
+            'categories' => $categoryRepository->findAll()
+        ]);
     }
 }

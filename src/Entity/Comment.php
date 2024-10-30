@@ -23,14 +23,14 @@ class Comment
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?user $author = null;
+    private ?User $author = null;
 
     #[ORM\ManyToOne(inversedBy: 'comments')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?media $media = null;
+    private ?Media $media = null;
 
     #[ORM\ManyToOne]
-    private ?comment $parentComment = null;
+    private ?Comment $parentComment = null;
 
     public function getId(): ?int
     {
@@ -61,36 +61,36 @@ class Comment
         return $this;
     }
 
-    public function getAuthor(): ?user
+    public function getAuthor(): ?User
     {
         return $this->author;
     }
 
-    public function setAuthor(?user $author): static
+    public function setAuthor(?User $author): static
     {
         $this->author = $author;
 
         return $this;
     }
 
-    public function getMedia(): ?media
+    public function getMedia(): ?Media
     {
         return $this->media;
     }
 
-    public function setMedia(?media $media): static
+    public function setMedia(?Media $media): static
     {
         $this->media = $media;
 
         return $this;
     }
 
-    public function getParentComment(): ?comment
+    public function getParentComment(): ?Comment
     {
         return $this->parentComment;
     }
 
-    public function setParentComment(?comment $parentComment): static
+    public function setParentComment(?Comment $parentComment): static
     {
         $this->parentComment = $parentComment;
 

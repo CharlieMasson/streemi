@@ -18,11 +18,11 @@ class PlaylistMedia
 
     #[ORM\ManyToOne(inversedBy: 'playlistMedia')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?playlist $playlist = null;
+    private ?Playlist $playlist = null;
 
     #[ORM\ManyToOne(inversedBy: 'playlistMedia')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?media $media = null;
+    private ?Media $media = null;
 
     public function getId(): ?int
     {
@@ -41,24 +41,24 @@ class PlaylistMedia
         return $this;
     }
 
-    public function getPlaylist(): ?playlist
+    public function getPlaylist(): ?Playlist
     {
         return $this->playlist;
     }
 
-    public function setPlaylist(?playlist $playlist): static
+    public function setPlaylist(?Playlist $playlist): static
     {
         $this->playlist = $playlist;
 
         return $this;
     }
 
-    public function getMedia(): ?media
+    public function getMedia(): ?Media
     {
         return $this->media;
     }
 
-    public function setMedia(?media $media): static
+    public function setMedia(?Media $media): static
     {
         $this->media = $media;
 
