@@ -24,11 +24,12 @@ class CategoryController extends AbstractController
     {
         //recup catégorie par son nom
         $category = $categoryRepository->findOneBy(['name' => $categoryName]);
+        $movies = $movieRepository->findByCategoryName($category->getName());
 
         return $this->render('movie/category.html.twig', [
             'category' => $category,
             'categories' => $categoryRepository->findAll(),
-            'movies' => $movieRepository->findAll()
+            'movies' => $movies
         ]);
     }
 }
