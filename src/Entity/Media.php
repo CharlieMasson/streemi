@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Enum\MediaTypeEnum;
 use App\Repository\MediaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -44,17 +43,14 @@ class Media
     /**
      * @var Collection<int, category>
      */
-    #[ORM\ManyToMany(targetEntity: category::class, inversedBy: 'media')]
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'media')]
     private Collection $categories;
 
     /**
      * @var Collection<int, language>
      */
-    #[ORM\ManyToMany(targetEntity: language::class, inversedBy: 'media')]
+    #[ORM\ManyToMany(targetEntity: Language::class, inversedBy: 'media')]
     private Collection $languages;
-
-    #[ORM\Column(enumType: MediaTypeEnum::class)]
-    private ?MediaTypeEnum $mediaType = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $shortDescription = null;
@@ -222,18 +218,6 @@ class Media
     public function removeLanguage(language $language): static
     {
         $this->languages->removeElement($language);
-
-        return $this;
-    }
-
-    public function getMediaType(): ?MediaTypeEnum
-    {
-        return $this->mediaType;
-    }
-
-    public function setMediaType(MediaTypeEnum $mediaType): static
-    {
-        $this->mediaType = $mediaType;
 
         return $this;
     }
