@@ -59,19 +59,19 @@ class AppFixtures extends Fixture
         $subscriptions = [];
 
         $this->createUsers($manager, $users, $this->passwordHasher);
-        //$this->createPlaylists($manager, $users, $playlists);
-        //$this->createSubscriptions($manager, $users, $subscriptions);
+        $this->createPlaylists($manager, $users, $playlists);
+        $this->createSubscriptions($manager, $users, $subscriptions);
         $this->createCategories($manager, $categories);
         $this->createLanguages($manager, $languages);
         $this->createMedia($manager, $medias);
-        //$this->createComments($manager, $medias, $users);
+        $this->createComments($manager, $medias, $users);
 
-        //$this->linkMediaToPlaylists($medias, $playlists, $manager);
-        //$this->linkSubscriptionToUsers($users, $subscriptions, $manager);
-        //$this->linkMediaToCategories($medias, $categories);
-        //$this->linkMediaToLanguages($medias, $languages);
+        $this->linkMediaToPlaylists($medias, $playlists, $manager);
+        $this->linkSubscriptionToUsers($users, $subscriptions, $manager);
+        $this->linkMediaToCategories($medias, $categories);
+        $this->linkMediaToLanguages($medias, $languages);
 
-        //$this->addUserPlaylistSubscriptions($manager, $users, $playlists);
+        $this->addUserPlaylistSubscriptions($manager, $users, $playlists);
 
         $manager->flush();
     }
@@ -119,11 +119,11 @@ class AppFixtures extends Fixture
             $manager->persist(object: $media);
             $medias[] = $media;
 
-            $this->addCastingAndStaff($media);
+            //$this->addCastingAndStaff($media);
 
-            if ($media instanceof Serie) {
-                $this->createSeasons($manager, $media);
-            }
+//            if ($media instanceof Serie) {
+//                $this->createSeasons($manager, $media);
+//            }
 
 //            if ($media instanceof Movie) {
 //                $media->setDuration(duration: random_int(60, 180));
@@ -301,7 +301,7 @@ class AppFixtures extends Fixture
 
             for ($i = 0; $i < random_int(1, self::MAX_SUBSCRIPTIONS_HISTORY_PER_USER); $i++) {
                 $history = new SubscriptionHistory();
-                $history->setStreemiUser($user);
+                $history->setSubscriber($user);
                 $history->setSubscription($sub);
                 $history->setStartAt(new DateTimeImmutable());
                 $history->setEndAt(new DateTimeImmutable());

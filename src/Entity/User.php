@@ -184,7 +184,7 @@ class User implements Userinterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->subscriptionHistories->contains($subscriptionHistory)) {
             $this->subscriptionHistories->add($subscriptionHistory);
-            $subscriptionHistory->setStreemiUser($this);
+            $subscriptionHistory->setSubscriber($this);
         }
 
         return $this;
@@ -194,8 +194,8 @@ class User implements Userinterface, PasswordAuthenticatedUserInterface
     {
         if ($this->subscriptionHistories->removeElement($subscriptionHistory)) {
             // set the owning side to null (unless already changed)
-            if ($subscriptionHistory->getStreemiUser() === $this) {
-                $subscriptionHistory->setStreemiUser(null);
+            if ($subscriptionHistory->getSubscriber() === $this) {
+                $subscriptionHistory->setSubscriber(null);
             }
         }
 

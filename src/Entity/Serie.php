@@ -11,9 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: SerieRepository::class)]
 class Serie extends Media
 {
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
     /**
      * @var Collection<int, Season>
      */
@@ -24,18 +21,6 @@ class Serie extends Media
     {
         parent::__construct();
         $this->seasons = new ArrayCollection();
-    }
-
-    public function getName(): ?string
-    {
-        return $this->name;
-    }
-
-    public function setName(string $name): static
-    {
-        $this->name = $name;
-
-        return $this;
     }
 
     /**

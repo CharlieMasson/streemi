@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SubscriptionRepository;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
@@ -22,12 +23,17 @@ class Subscription
     #[ORM\Column]
     private ?int $duration = null;
 
-    #[ORM\OneToOne(mappedBy: 'subscription', cascade: ['persist', 'remove'])]
-    private ?SubscriptionHistory $subscriptionHistory = null;
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'currentSubscription')]
+    private Collection $users;
 
-    #[ORM\ManyToOne(inversedBy: 'subscriptions')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?user $streemiUser = null;
+    /**
+     * @var Collection<int, SubscriptionHistory>
+     */
+    #[ORM\OneToMany(targetEntity: SubscriptionHistory::class, mappedBy: 'subscription')]
+    private Collection $subscriptionHistories;
 
     public function getId(): ?int
     {
@@ -70,36 +76,62 @@ class Subscription
         return $this;
     }
 
-    public function getSubscriptionHistory(): ?SubscriptionHistory
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
     {
-        return $this->subscriptionHistory;
+        return $this->users;
     }
 
-    public function setSubscriptionHistory(?SubscriptionHistory $subscriptionHistory): static
+    public function addUser(User $user): static
     {
-        // unset the owning side of the relation if necessary
-        if ($subscriptionHistory === null && $this->subscriptionHistory !== null) {
-            $this->subscriptionHistory->setSubscription(null);
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setCurrentSubscription($this);
         }
-
-        // set the owning side of the relation if necessary
-        if ($subscriptionHistory !== null && $subscriptionHistory->getSubscription() !== $this) {
-            $subscriptionHistory->setSubscription($this);
-        }
-
-        $this->subscriptionHistory = $subscriptionHistory;
 
         return $this;
     }
 
-    public function getStreemiUser(): ?user
+    public function removeUser(User $user): static
     {
-        return $this->streemiUser;
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getCurrentSubscription() === $this) {
+                $user->setCurrentSubscription(null);
+            }
+        }
+
+        return $this;
     }
 
-    public function setStreemiUser(?user $streemiUser): static
+    /**
+     * @return Collection<int, SubscriptionHistory>
+     */
+    public function getSubscriptionHistories(): Collection
     {
-        $this->streemiUser = $streemiUser;
+        return $this->subscriptionHistories;
+    }
+
+    public function addSubscriptionHistory(SubscriptionHistory $subscriptionHistory): static
+    {
+        if (!$this->subscriptionHistories->contains($subscriptionHistory)) {
+            $this->subscriptionHistories->add($subscriptionHistory);
+            $subscriptionHistory->setSubscription($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubscriptionHistory(SubscriptionHistory $subscriptionHistory): static
+    {
+        if ($this->subscriptionHistories->removeElement($subscriptionHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($subscriptionHistory->getSubscription() === $this) {
+                $subscriptionHistory->setSubscription(null);
+            }
+        }
 
         return $this;
     }

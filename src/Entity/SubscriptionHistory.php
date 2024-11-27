@@ -19,11 +19,13 @@ class SubscriptionHistory
     #[ORM\Column]
     private ?\DateTimeImmutable $endAt = null;
 
-    #[ORM\OneToOne(inversedBy: 'subscriptionHistory', cascade: ['persist', 'remove'])]
-    private ?subscription $subscription = null;
+    #[ORM\ManyToOne(inversedBy: 'subscriptionHistories')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $subscriber = null;
 
     #[ORM\ManyToOne(inversedBy: 'subscriptionHistories')]
-    private ?user $streemiUser = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Subscription $subscription = null;
 
     public function getId(): ?int
     {
@@ -54,26 +56,26 @@ class SubscriptionHistory
         return $this;
     }
 
-    public function getSubscription(): ?subscription
+    public function getSubscriber(): ?User
     {
-        return $this->subscription;
+        return $this->subscriber;
     }
 
-    public function setSubscription(?subscription $subscription): static
+    public function setSubscriber(?User $subscriber): static
     {
-        $this->subscription = $subscription;
+        $this->subscriber = $subscriber;
 
         return $this;
     }
 
-    public function getStreemiUser(): ?user
+    public function getSubscription(): ?Subscription
     {
-        return $this->streemiUser;
+        return $this->subscription;
     }
 
-    public function setStreemiUser(?user $streemiUser): static
+    public function setSubscription(?Subscription $subscription): static
     {
-        $this->streemiUser = $streemiUser;
+        $this->subscription = $subscription;
 
         return $this;
     }
