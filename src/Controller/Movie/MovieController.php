@@ -24,4 +24,10 @@ class MovieController extends AbstractController
     {
         return $this->render('movie/detail_serie.html.twig');
     }
+
+    #[Route('/discover', name: 'movie_discover')]
+    public function movieDiscover(): Response
+    {
+        return $this->render('movie/detail_serie.html.twig');
+    }
 }

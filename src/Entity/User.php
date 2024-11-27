@@ -6,11 +6,14 @@ use App\Enum\UserAccountStatusEnum;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User
+class User implements Userinterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -29,49 +32,48 @@ class User
     #[ORM\Column(enumType: UserAccountStatusEnum::class)]
     private ?UserAccountStatusEnum $accountStatus = null;
 
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Subscription $currentSubscription = null;
+    
+    /**
+     * @var Collection<int, Comment>
+     */
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'publisher')]
+    private Collection $comments;
+
     /**
      * @var Collection<int, SubscriptionHistory>
      */
-    #[ORM\OneToMany(targetEntity: SubscriptionHistory::class, mappedBy: 'streemiUser')]
+    #[ORM\OneToMany(targetEntity: SubscriptionHistory::class, mappedBy: 'subscriber')]
     private Collection $subscriptionHistories;
-
-    /**
-     * @var Collection<int, Subscription>
-     */
-    #[ORM\OneToMany(targetEntity: Subscription::class, mappedBy: 'streemiUser')]
-    private Collection $subscriptions;
-
-    /**
-     * @var Collection<int, Playlist>
-     */
-    #[ORM\OneToMany(targetEntity: Playlist::class, mappedBy: 'streemiUser')]
-    private Collection $playlists;
 
     /**
      * @var Collection<int, PlaylistSubscription>
      */
-    #[ORM\OneToMany(targetEntity: PlaylistSubscription::class, mappedBy: 'streemiUser')]
+    #[ORM\OneToMany(targetEntity: PlaylistSubscription::class, mappedBy: 'subscriber')]
     private Collection $playlistSubscriptions;
 
     /**
-     * @var Collection<int, Comment>
+     * @var Collection<int, Playlist>
      */
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'streemiUser')]
-    private Collection $comments;
+    #[ORM\OneToMany(targetEntity: Playlist::class, mappedBy: 'creator')]
+    private Collection $playlists;
 
     /**
      * @var Collection<int, WatchHistory>
      */
-    #[ORM\OneToMany(targetEntity: WatchHistory::class, mappedBy: 'streemiUser')]
+    #[ORM\OneToMany(targetEntity: WatchHistory::class, mappedBy: 'watcher')]
     private Collection $watchHistories;
+
+    #[ORM\Column(nullable: true)]
+    private ?array $roles = null;
 
     public function __construct()
     {
-        $this->subscriptionHistories = new ArrayCollection();
-        $this->subscriptions = new ArrayCollection();
-        $this->playlists = new ArrayCollection();
-        $this->playlistSubscriptions = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->subscriptionHistories = new ArrayCollection();
+        $this->playlistSubscriptions = new ArrayCollection();
+        $this->playlists = new ArrayCollection();
         $this->watchHistories = new ArrayCollection();
     }
 
@@ -128,6 +130,48 @@ class User
         return $this;
     }
 
+    public function getCurrentSubscription(): ?Subscription
+    {
+        return $this->currentSubscription;
+    }
+
+    public function setCurrentSubscription(?Subscription $currentSubscription): static
+    {
+        $this->currentSubscription = $currentSubscription;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): static
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setAuthor($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): static
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getAuthor() === $this) {
+                $comment->setAuthor(null);
+            }
+        }
+
+        return $this;
+    }
+
     /**
      * @return Collection<int, SubscriptionHistory>
      */
@@ -152,66 +196,6 @@ class User
             // set the owning side to null (unless already changed)
             if ($subscriptionHistory->getStreemiUser() === $this) {
                 $subscriptionHistory->setStreemiUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Subscription>
-     */
-    public function getSubscriptions(): Collection
-    {
-        return $this->subscriptions;
-    }
-
-    public function addSubscription(Subscription $subscription): static
-    {
-        if (!$this->subscriptions->contains($subscription)) {
-            $this->subscriptions->add($subscription);
-            $subscription->setStreemiUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSubscription(Subscription $subscription): static
-    {
-        if ($this->subscriptions->removeElement($subscription)) {
-            // set the owning side to null (unless already changed)
-            if ($subscription->getStreemiUser() === $this) {
-                $subscription->setStreemiUser(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Playlist>
-     */
-    public function getPlaylists(): Collection
-    {
-        return $this->playlists;
-    }
-
-    public function addPlaylist(Playlist $playlist): static
-    {
-        if (!$this->playlists->contains($playlist)) {
-            $this->playlists->add($playlist);
-            $playlist->setStreemiUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removePlaylist(Playlist $playlist): static
-    {
-        if ($this->playlists->removeElement($playlist)) {
-            // set the owning side to null (unless already changed)
-            if ($playlist->getStreemiUser() === $this) {
-                $playlist->setStreemiUser(null);
             }
         }
 
@@ -249,29 +233,29 @@ class User
     }
 
     /**
-     * @return Collection<int, Comment>
+     * @return Collection<int, Playlist>
      */
-    public function getComments(): Collection
+    public function getPlaylists(): Collection
     {
-        return $this->comments;
+        return $this->playlists;
     }
 
-    public function addComment(Comment $comment): static
+    public function addPlaylist(Playlist $playlist): static
     {
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
-            $comment->setStreemiUser($this);
+        if (!$this->playlists->contains($playlist)) {
+            $this->playlists->add($playlist);
+            $playlist->setAUthor($this);
         }
 
         return $this;
     }
 
-    public function removeComment(Comment $comment): static
+    public function removePlaylist(Playlist $playlist): static
     {
-        if ($this->comments->removeElement($comment)) {
+        if ($this->playlists->removeElement($playlist)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getStreemiUser() === $this) {
-                $comment->setStreemiUser(null);
+            if ($playlist->getAuthor() === $this) {
+                $playlist->setAUthor(null);
             }
         }
 
@@ -307,4 +291,26 @@ class User
 
         return $this;
     }
+
+    public function eraseCredentials(): void
+    {
+
+    }
+
+    public function getUserIdentifier(): string {
+        return $this->email;
+    }
+
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(?array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
 }

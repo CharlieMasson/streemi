@@ -16,17 +16,6 @@ class MediaRepository extends ServiceEntityRepository
         parent::__construct($registry, Media::class);
     }
 
-    public function findByCategoryName(string $categoryName): array
-    {
-        return $this->createQueryBuilder('m')
-            ->innerJoin('m.categories', 'c')
-            ->where('c.name = :categoryName')
-            ->setParameter('categoryName', $categoryName)
-            ->getQuery()
-            ->getResult();
-    }
-
-
 //    /**
 //     * @return Media[] Returns an array of Media objects
 //     */

@@ -7,14 +7,15 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use \App\Enum\MediaTypeEnum;
 use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\InheritanceType;
 
-#[ORM\Entity(repositoryClass: MediaRepository::class)]
 #[InheritanceType('JOINED')]
 #[DiscriminatorColumn(name: 'discr', type: 'string')]
 #[DiscriminatorMap(['movie' => Movie::class, 'serie' => Serie::class])]
+#[ORM\Entity(repositoryClass: MediaRepository::class)]
 class Media
 {
     #[ORM\Id]
@@ -25,14 +26,8 @@ class Media
     /**
      * @var Collection<int, Comment>
      */
-    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'media', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'media')]
     private Collection $comments;
-
-    /**
-     * @var Collection<int, PlaylistMedia>
-     */
-    #[ORM\OneToMany(targetEntity: PlaylistMedia::class, mappedBy: 'media', orphanRemoval: true)]
-    private Collection $playlistMedia;
 
     /**
      * @var Collection<int, WatchHistory>
@@ -41,40 +36,49 @@ class Media
     private Collection $watchHistories;
 
     /**
-     * @var Collection<int, category>
+     * @var Collection<int, PlaylistMedia>
      */
-    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'media')]
+    #[ORM\OneToMany(targetEntity: PlaylistMedia::class, mappedBy: 'media')]
+    private Collection $playlistMedia;
+
+    /**
+     * @var Collection<int, Category>
+     */
+    #[ORM\ManyToMany(targetEntity: Category::class, inversedBy: 'medias')]
     private Collection $categories;
 
     /**
-     * @var Collection<int, language>
+     * @var Collection<int, Language>
      */
-    #[ORM\ManyToMany(targetEntity: Language::class, inversedBy: 'media')]
+    #[ORM\ManyToMany(targetEntity: Language::class, inversedBy: 'medias')]
     private Collection $languages;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $shortDescription = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[ORM\Column(type: Types::TEXT)]
     private ?string $longDescription = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(length: 255)]
+    private ?string $title = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $releaseDate = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $coverImage = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?array $staff = null;
+    #[ORM\Column]
+    private array $staff = [];
 
-    #[ORM\Column(nullable: true)]
-    private ?array $mCast = null;
+    #[ORM\Column]
+    private array $casting = [];
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
-        $this->playlistMedia = new ArrayCollection();
         $this->watchHistories = new ArrayCollection();
+        $this->playlistMedia = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->languages = new ArrayCollection();
     }
@@ -115,36 +119,6 @@ class Media
     }
 
     /**
-     * @return Collection<int, PlaylistMedia>
-     */
-    public function getPlaylistMedia(): Collection
-    {
-        return $this->playlistMedia;
-    }
-
-    public function addPlaylistMedium(PlaylistMedia $playlistMedium): static
-    {
-        if (!$this->playlistMedia->contains($playlistMedium)) {
-            $this->playlistMedia->add($playlistMedium);
-            $playlistMedium->setMedia($this);
-        }
-
-        return $this;
-    }
-
-    public function removePlaylistMedium(PlaylistMedia $playlistMedium): static
-    {
-        if ($this->playlistMedia->removeElement($playlistMedium)) {
-            // set the owning side to null (unless already changed)
-            if ($playlistMedium->getMedia() === $this) {
-                $playlistMedium->setMedia(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, WatchHistory>
      */
     public function getWatchHistories(): Collection
@@ -175,14 +149,44 @@ class Media
     }
 
     /**
-     * @return Collection<int, category>
+     * @return Collection<int, PlaylistMedia>
+     */
+    public function getPlaylistMedia(): Collection
+    {
+        return $this->playlistMedia;
+    }
+
+    public function addPlaylistMedium(PlaylistMedia $playlistMedium): static
+    {
+        if (!$this->playlistMedia->contains($playlistMedium)) {
+            $this->playlistMedia->add($playlistMedium);
+            $playlistMedium->setMedia($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlaylistMedium(PlaylistMedia $playlistMedium): static
+    {
+        if ($this->playlistMedia->removeElement($playlistMedium)) {
+            // set the owning side to null (unless already changed)
+            if ($playlistMedium->getMedia() === $this) {
+                $playlistMedium->setMedia(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
      */
     public function getCategories(): Collection
     {
         return $this->categories;
     }
 
-    public function addCategory(category $category): static
+    public function addCategory(Category $category): static
     {
         if (!$this->categories->contains($category)) {
             $this->categories->add($category);
@@ -191,7 +195,7 @@ class Media
         return $this;
     }
 
-    public function removeCategory(category $category): static
+    public function removeCategory(Category $category): static
     {
         $this->categories->removeElement($category);
 
@@ -199,14 +203,14 @@ class Media
     }
 
     /**
-     * @return Collection<int, language>
+     * @return Collection<int, Language>
      */
     public function getLanguages(): Collection
     {
         return $this->languages;
     }
 
-    public function addLanguage(language $language): static
+    public function addLanguage(Language $language): static
     {
         if (!$this->languages->contains($language)) {
             $this->languages->add($language);
@@ -215,7 +219,7 @@ class Media
         return $this;
     }
 
-    public function removeLanguage(language $language): static
+    public function removeLanguage(Language $language): static
     {
         $this->languages->removeElement($language);
 
@@ -227,7 +231,7 @@ class Media
         return $this->shortDescription;
     }
 
-    public function setShortDescription(?string $shortDescription): static
+    public function setShortDescription(string $shortDescription): static
     {
         $this->shortDescription = $shortDescription;
 
@@ -239,9 +243,21 @@ class Media
         return $this->longDescription;
     }
 
-    public function setLongDescription(?string $longDescription): static
+    public function setLongDescription(string $longDescription): static
     {
         $this->longDescription = $longDescription;
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
 
         return $this;
     }
@@ -263,33 +279,33 @@ class Media
         return $this->coverImage;
     }
 
-    public function setCoverImage(?string $coverImage): static
+    public function setCoverImage(string $coverImage): static
     {
         $this->coverImage = $coverImage;
 
         return $this;
     }
 
-    public function getStaff(): ?array
+    public function getStaff(): array
     {
         return $this->staff;
     }
 
-    public function setStaff(?array $staff): static
+    public function setStaff(array $staff): static
     {
         $this->staff = $staff;
 
         return $this;
     }
 
-    public function getMCast(): ?array
+    public function getCasting(): array
     {
-        return $this->mCast;
+        return $this->casting;
     }
 
-    public function setMCast(?array $mCast): static
+    public function setCasting(array $casting): static
     {
-        $this->mCast = $mCast;
+        $this->casting = $casting;
 
         return $this;
     }

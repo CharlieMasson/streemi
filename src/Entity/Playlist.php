@@ -25,7 +25,7 @@ class Playlist
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'playlists')]
-    private ?user $author = null;
+    private ?User $author = null;
 
     /**
      * @var Collection<int, PlaylistSubscription>
@@ -86,12 +86,12 @@ class Playlist
         return $this;
     }
 
-    public function getAuthor(): ?user
+    public function getAuthor(): ?User
     {
         return $this->author;
     }
 
-    public function setAuthor(?user $author): static
+    public function setAuthor(?User $author): static
     {
         $this->author = $author;
 
@@ -156,5 +156,35 @@ class Playlist
         }
 
         return $this;
+    }
+
+    public function getAllMoviePlaylistMedia(): Collection
+    {
+        $result = [];
+
+        foreach ($this->playlistMedia as $playlistMedia) {
+            $media = $playlistMedia->getMedia();
+
+            if ($media instanceof Movie) {
+                $result[] = $media;
+            }
+        }
+
+        return new ArrayCollection($result);
+    }
+
+    public function getAllSeriePlaylistMedia(): Collection
+    {
+        $result = [];
+
+        foreach ($this->playlistMedia as $playlistMedia) {
+            $media = $playlistMedia->getMedia();
+
+            if ($media instanceof Serie) {
+                $result[] = $media;
+            }
+        }
+
+        return new ArrayCollection($result);
     }
 }

@@ -21,11 +21,11 @@ class WatchHistory
 
     #[ORM\ManyToOne(inversedBy: 'watchHistories')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?user $streemiUser = null;
+    private ?User $streemiUser = null;
 
     #[ORM\ManyToOne(inversedBy: 'watchHistories')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?media $media = null;
+    private ?Media $media = null;
 
     public function getId(): ?int
     {
@@ -56,24 +56,24 @@ class WatchHistory
         return $this;
     }
 
-    public function getStreemiUser(): ?user
+    public function getStreemiUser(): ?User
     {
         return $this->streemiUser;
     }
 
-    public function setStreemiUser(?user $streemiUser): static
+    public function setStreemiUser(?User $streemiUser): static
     {
         $this->streemiUser = $streemiUser;
 
         return $this;
     }
 
-    public function getMedia(): ?media
+    public function getMedia(): ?Media
     {
         return $this->media;
     }
 
-    public function setMedia(?media $media): static
+    public function setMedia(?Media $media): static
     {
         $this->media = $media;
 
