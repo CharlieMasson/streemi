@@ -2,8 +2,8 @@
 
 {% block title %}Mes playlists{% endblock %}
 
-{% block contenu_page %}
-    <div>
+{% block body %}
+    <main>
         <section>
             <h1 class="font-medium text-black text-lg">Mes listes de <span class="font-bold text-red-600">films</span> et <span class="font-bold text-red-600">séries</span></h1>
 
@@ -54,7 +54,7 @@
                 </div>
             </button>
         </section>
-    </div>
+    </main>
     <script>
         const choosePlaylistSelect = document.getElementById('choosePlaylistSelect');
         choosePlaylistSelect.addEventListener('change', function() {
