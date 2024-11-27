@@ -4,7 +4,7 @@
    {{ parent() }} Page de découverte
 {% endblock %}
 
-{% block contenu_page %}
+{% block body %}
     <section>
         <nav class="flex space-x-6 text-gray-400 font-medium">
             <a href="" class="hover:text-gray-700">Séries</a>
@@ -35,9 +35,9 @@
         </div>
 
         <ul class="mt-4 grid grid-cols-2 gap-y-5 sm:grid-cols-3 gap-x-5 ">
-            {% include 'parts/movie_card_homepage.html.twig' %}
-            {% include 'parts/movie_card_homepage.html.twig' %}
-            {% include 'parts/movie_card_homepage.html.twig' %}
+            {% for movie in movies %}
+                {% include 'parts/movie_card_homepage.html.twig' %}
+            {% endfor %}
         </ul>
     </section>
     <section class="mt-9">

@@ -13,13 +13,19 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class CategoryController extends AbstractController
 {
-    #[Route('/discover')]
-    public function index(): Response
+    #[Route('/discover', name: 'movie_discover')]
+    public function movieDiscover(MovieRepository $movieRepository, CategoryRepository $categoryRepository): Response
     {
-        return $this->render('movie/discover.html.twig');
+        $movies = $movieRepository->findAll();
+        $categories = $categoryRepository->findAll();
+
+        return $this->render('movie/discover.html.twig', [
+            'movies' => $movies,
+            'categories' => $categories
+        ]);
     }
 
-    #[Route('/category/{categoryName}', name: 'category')]
+    #[Route('/category/{categoryName}', name: 'show_category')]
     public function show(CategoryRepository $categoryRepository, MovieRepository $movieRepository, string $categoryName): Response
     {
         //recup catégorie par son nom
