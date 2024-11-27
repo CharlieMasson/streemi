@@ -144,6 +144,8 @@ class AppFixtures extends Fixture
 
             $user->setAccountStatus(UserAccountStatusEnum::ACTIVE);
 
+            $user->setRoles(["ROLE_UTILISATEUR"]);
+
             $users[] = $user;
             $manager->persist(object: $user);
         }
