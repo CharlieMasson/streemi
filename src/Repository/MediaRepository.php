@@ -40,4 +40,18 @@ class MediaRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+
+    public function findPopular(int $limit = 10): array
+    {
+        return $this->createQueryBuilder('m')
+            ->select('m, SUM(wh.numberOfViews) AS HIDDEN totalViews')
+            ->join('m.watchHistories', 'wh') 
+            ->where('m INSTANCE OF :movieType')
+            ->setParameter('movieType', 'movie')
+            ->groupBy('m.id')
+            ->orderBy('totalViews', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

@@ -18,6 +18,7 @@ use App\Entity\Serie;
 use App\Entity\Subscription;
 use App\Entity\SubscriptionHistory;
 use App\Entity\User;
+use App\Entity\WatchHistory;
 use App\Enum\CommentStatusEnum;
 use App\Enum\UserAccountStatusEnum;
 use DateTime;
@@ -41,6 +42,7 @@ class AppFixtures extends Fixture
     public const MAX_SUBSCRIPTIONS_HISTORY_PER_USER = 3;
     public const MAX_COMMENTS_PER_MEDIA = 10;
     public const MAX_PLAYLIST_SUBSCRIPTION_PER_USERS = 3;
+    public const MAX_WATCH_HISTORY_PER_USER = 3;
 
     private UserPasswordHasherInterface $passwordHasher;
 
@@ -72,6 +74,7 @@ class AppFixtures extends Fixture
         $this->linkMediaToLanguages($medias, $languages);
 
         $this->addUserPlaylistSubscriptions($manager, $users, $playlists);
+        $this->addUserWatchHistories($manager, $users, $medias);
 
         $manager->flush();
     }
@@ -363,6 +366,21 @@ class AppFixtures extends Fixture
                 $subscription->setPlaylist($playlists[array_rand($playlists)]);
                 $subscription->setSubscribedAt(new DateTimeImmutable());
                 $manager->persist($subscription);
+            }
+        }
+    }
+
+    protected function addUserWatchHistories(ObjectManager $manager, array $users, array $medias): void
+    {
+        /** @var User $user */
+        foreach ($users as $user) {
+            for ($i = 0; $i < random_int(0, self::MAX_WATCH_HISTORY_PER_USER); $i++) {
+                $history = new WatchHistory();
+                $history->setStreemiUser($user);
+                $history->setMedia($medias[array_rand($medias)]);
+                $history->setLastWatchedAt(new DateTimeImmutable());
+                $history->setNumberOfViews(rand(1,10));
+                $manager->persist($history);
             }
         }
     }
