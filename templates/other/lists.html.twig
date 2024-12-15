@@ -29,7 +29,7 @@
                             <option value="{{ playlist.id }}">#{{ loop.index }} - {{ playlist.name }} ({{ playlist.allMoviePlaylistMedia | length }} films & {{ playlist.allSeriePlaylistMedia | length }} séries)</option>
                         {% endfor %}
                         {% for subscribedPlaylist in subscribedPlaylists %}
-                            <option value="{{ subscribedPlaylist.playlist.id }}">#{{ loop.index }} - {{ subscribedPlaylist.playlist.name }} ({{ subscribedPlaylist.playlist.allMoviePlaylistMedia | length }} films & {{ subscribedPlaylist.playlist.allSeriePlaylistMedia | length }} séries) - Liste de {{ subscribedPlaylist.playlist.creator.username }}</option>
+                            <option value="{{ subscribedPlaylist.playlist.id }}">#{{ loop.index }} - {{ subscribedPlaylist.playlist.name }} ({{ subscribedPlaylist.playlist.allMoviePlaylistMedia | length }} films & {{ subscribedPlaylist.playlist.allSeriePlaylistMedia | length }} séries) - Liste de {{ subscribedPlaylist.playlist.author.username }}</option>
                         {% endfor %}
                     </select>
                     <div class="pointer-events-none absolute right-2 inset-y-0 flex items-center px-2">

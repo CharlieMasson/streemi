@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Other;
 
 use App\Entity\PlaylistSubscription;
+use App\Entity\Playlist;
 use App\Repository\PlaylistRepository;
 use App\Repository\PlaylistSubscriptionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,19 +19,23 @@ class ListController extends AbstractController
     public function show(
         PlaylistRepository $playlistRepository,
         PlaylistSubscriptionRepository $playlistSubscriptionRepository,
-        Request $request,
+        Request $request
     ): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $user = $this->getUser();
+
         $playlistId = $request->query->get('playlist');
 
-        $playlist = "";
+        $playlist =new Playlist();
         if ($playlistId) $playlist = $playlistRepository->find($playlistId);
 
-        $playlits = $playlistRepository->findAll();
-        $subscribedPlaylists = $playlistSubscriptionRepository->findAll();
+        $userPlaylists = $user->getPlaylists();
+
+        $subscribedPlaylists = $playlistSubscriptionRepository->findBy(['streemiUser' => $user]);
 
         return $this->render('other/lists.html.twig', [
-            'playlists' => $playlits,
+            'playlists' => $userPlaylists,
             'subscribedPlaylists' => $subscribedPlaylists,
             'activePlaylist' => $playlist,
         ]);
