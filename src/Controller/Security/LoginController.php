@@ -53,7 +53,7 @@ class LoginController extends AbstractController
         return $this->render('auth/register.html.twig');
     }
 
-    #[Route(path: '/forgot', name: 'forgot_post')]
+    #[Route(path: '/forgot', name: 'forgot')]
     public function forgot(Request $request, UserRepository $userRepository, MailerInterface $mailer): Response
     {
         if ($request->isMethod('POST')) {
