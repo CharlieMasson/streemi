@@ -1,0 +1,19 @@
+App\Entity\Category:
+    category_{1}:
+        nom: 'Action'
+        label: 'Action'
+    category_{2}:
+        nom: 'Comédie'
+        label: 'Comédie'
+    category_{3}:
+        nom: 'Drame'
+        label: 'Drame'
+    category_{4}:
+        nom: 'Horreur'
+        label: 'Horreur'
+    category_{5}:
+        nom: 'Science-fiction'
+        label: 'Science-fiction'
+    category_{6}:
+        nom: 'Thriller'
+        label: 'Thriller'

@@ -1,0 +1,7 @@
+App\Entity\Comment:
+  comment_{1..100}:
+    content: <sentence(10)>
+    status: <randomElement(['validated', 'waiting'])>
+    author: '@user_<random()>'
+    media: '@movie_<random()>'
+    parentComment: '@comment_<numberBetween(1, 50)>'

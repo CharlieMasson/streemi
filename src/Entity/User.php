@@ -68,6 +68,9 @@ class User implements Userinterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?array $roles = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $resetToken = null;
+
     public function __construct()
     {
         $this->comments = new ArrayCollection();
@@ -309,6 +312,18 @@ class User implements Userinterface, PasswordAuthenticatedUserInterface
     public function setRoles(?array $roles): static
     {
         $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function getResetToken(): ?string
+    {
+        return $this->resetToken;
+    }
+
+    public function setResetToken(?string $resetToken): static
+    {
+        $this->resetToken = $resetToken;
 
         return $this;
     }

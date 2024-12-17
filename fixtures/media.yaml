@@ -1,0 +1,19 @@
+App\Entity\Movie:
+  movie_{1..50}:
+    title: "Film n°<numberBetween(1, 50)>"
+    longDescription: <paragraph()>
+    shortDescription: <sentence()>
+    coverImage: "stock_image<numberBetween(1, 50)>.png"
+    releaseDate: <dateTimeBetween('-1 year', '+1 year')>
+    categories: ['@category{1..10}'', '@category_<random()>']
+    languages: ['@language_<random()>', '@language_<random()>']
+
+App\Entity\Serie:
+  serie_{1..50}:
+    title: "Série n°<numberBetween(1, 50)>"
+    longDescription: <paragraph()>
+    shortDescription: <sentence()>
+    coverImage: "stock_image<numberBetween(1, 50)>.png"
+    releaseDate: <dateTimeBetween('-1 year', '+1 year')>
+    categories: ['@category_<random()>', '@category_<random()>']
+    languages: ['@language_<random()>', '@language_<random()>']
