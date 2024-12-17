@@ -15,18 +15,15 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class LoginController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
-    private UserPasswordHasherInterface $passwordHasher;
 
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->passwordHasher = $passwordHasher;
     }
 
     #[Route(path: '/login', name: 'login')]
@@ -54,7 +51,7 @@ class LoginController extends AbstractController
     }
 
     #[Route(path: '/forgot', name: 'forgot')]
-    public function forgot(Request $request, UserRepository $userRepository, MailerInterface $mailer): Response
+    public function forgot(Request $request, UserRepository $userRepository, MailerInterface $mailer, UserPasswordHasherInterface $passwordHasher): Response
     {
         if ($request->isMethod('POST')) {
             $email = $request->get('email');
@@ -110,7 +107,7 @@ class LoginController extends AbstractController
     }
 
     #[Route(path: '/reset/{token}', name: 'reset')]
-    public function reset(string $token, UserRepository $userRepository, Request $request, PasswordHasherInterface $passwordHasher): Response
+    public function reset(string $token, UserRepository $userRepository, Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = $userRepository->findOneBy(['resetToken' => $token]);
 
@@ -128,7 +125,7 @@ class LoginController extends AbstractController
             } elseif (strlen($password) < 8) {
                 $this->addFlash('error', 'Le mot de passe doit contenir au moins 8 caractères.');
             } else {
-                $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
+                $hashedPassword = $passwordHasher->hashPassword($user, $password);
                 $user->setPassword($hashedPassword);
                 $user->setResetToken(null);
     
